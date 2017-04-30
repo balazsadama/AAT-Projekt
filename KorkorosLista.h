@@ -19,7 +19,6 @@ private:
 public:
 	KLista();
 	KLista(ifstream&);	// file-bol valo beovlasasnal hasznaljuk
-	KLista(Csomopont*);	// billentyuzetrol valo beolvasasnal hasznaljuk
 	~KLista();
 	int cspontokSzama();
 	bool ures();
@@ -30,6 +29,7 @@ public:
 	void beszurEle(Csomopont *p, Csomopont *uj);
 	void beszurUtan(Csomopont *p, Csomopont *uj);
 	void olvasBillenytuzetrol(int);
+	void olvasFilebol(ifstream&);
 };
 
 KLista::KLista() {
@@ -178,12 +178,6 @@ void KLista::beszurUtan(Csomopont *p, Csomopont *uj) {
 	p->next = uj;
 }
 
-KLista::KLista(Csomopont* x) {
-// billentyuzetrol valo beolvasaskor inicializaljuk a Korkoros Lista fej mutatojat az elso beolvasott adatra
-	fej = x;
-	x->next = fej;
-}
-
 void KLista::olvasBillenytuzetrol(int n) {
 	// parameterkent kap egy helyes csomopontszamot, hibakezeles mas alprogramban
 	int m;
@@ -215,4 +209,35 @@ void KLista::olvasBillenytuzetrol(int n) {
 			beszurUtan(prev, temp);
 		prev = temp;
 	}
+}
+
+void KLista::olvasFilebol(ifstream& f) {
+	int n;
+	string foglalkozas;
+	Csomopont *temp, *prev;
+
+	prev = fej;
+	f >> n;
+	do {
+		temp = new Csomopont;
+		f >> temp->lakos_sz;
+		for (int i = 0; i < temp->lakos_sz; i++) {
+			f >> foglalkozas;
+			if (temp->lakosok.find(foglalkozas) == temp->lakosok.end())	//nincs meg ilyen foglalkozas
+				temp->lakosok.insert(pair<string, int>(foglalkozas, 1));
+			else
+				temp->lakosok[foglalkozas]++;
+		}
+
+		if (fej == 0) {
+			fej = temp;
+		}
+		else if (prev != 0) {
+			prev->next = temp;
+		}
+		prev = temp;
+		temp->next = fej;
+		n--;
+	} while (n != 0);
+	f.close();
 }
