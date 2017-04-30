@@ -18,57 +18,26 @@ private:
 	Csomopont *fej;
 public:
 	KLista();
-	KLista(ifstream&);	// file-bol valo beovlasasnal hasznaljuk
 	~KLista();
-	int cspontokSzama();
+	int teritHossz();
 	bool ures();
 	bool tele();
 	void kiir();
 	void torol(Csomopont *p);
-	Csomopont* getFej() { return fej; }	// tesztelni, hogy a main-bol tudjunk
+	Csomopont* teritFej() { return fej; }	// tesztelni, hogy a main-bol tudjunk
 	void beszurEle(Csomopont *p, Csomopont *uj);
 	void beszurUtan(Csomopont *p, Csomopont *uj);
 	void olvasBillenytuzetrol(int);
 	void olvasFilebol(ifstream&);
+	Csomopont* ujCsomopontBillentyuzetrol();
+	void ujCsomopont();
+	Csomopont* teritAdottIndexnel(int);
 };
 
 KLista::KLista() {
 // megfelel az Init() fuggvenynek, letrehoz egy ures Korkoros Listat
 
 	fej = 0;
-}
-
-KLista::KLista(ifstream& f) {
-// file-bol valo beolvasas
-	int n;
-	string foglalkozas;
-	Csomopont *temp, *prev;
-
-	prev = 0;
-	fej = 0;
-	f >> n;
-	do {
-		temp = new Csomopont;
-		f >> temp->lakos_sz;
-		for (int i = 0; i < temp->lakos_sz; i++) {
-			f >> foglalkozas;
-			if (temp->lakosok.find(foglalkozas) == temp->lakosok.end())	//nincs meg ilyen foglalkozas
-				temp->lakosok.insert(pair<string, int>(foglalkozas, 1));
-			else
-				temp->lakosok[foglalkozas]++;
-		}
-
-		if (fej == 0) {
-			fej = temp;
-		}
-		else if (prev != 0){
-			prev->next = temp;
-		}
-		prev = temp;
-		temp->next = fej;
-		n--;
-	} while (n != 0);
-	f.close();
 }
 
 void KLista::kiir() {
@@ -87,7 +56,7 @@ void KLista::kiir() {
 	cout << endl << endl;
 }
 
-int KLista::cspontokSzama() {
+int KLista::teritHossz() {
 // visszateriti, hogy hany csomopontot tartalmaz a lista
 
 	int count = 0;
@@ -108,7 +77,7 @@ int KLista::cspontokSzama() {
 bool KLista::ures() {
 // ha egyetlen csomopontot sem tartalmaz a lista, akkor igaz erteket terit vissza
 
-	if (cspontokSzama() == 0)
+	if (teritHossz() == 0)
 		return true;
 	return false;
 }
@@ -116,7 +85,7 @@ bool KLista::ures() {
 bool KLista::tele() {
 // ha MAX_CSOMOPONT szamu csomopontbol all a lista, akkor igaz erteket terit vissza
 
-	if (cspontokSzama() == MAX_CSOMOPONT)
+	if (teritHossz() == MAX_CSOMOPONT)
 		return true;
 	return false;
 }
@@ -140,7 +109,7 @@ void KLista::torol(Csomopont *p) {
 
 	if (ures())
 		cout << "A lista ures!\n";
-	else if (cspontokSzama() == 1) {
+	else if (teritHossz() == 1) {
 		delete fej;
 		fej = 0;
 	}
@@ -240,4 +209,57 @@ void KLista::olvasFilebol(ifstream& f) {
 		n--;
 	} while (n != 0);
 	f.close();
+}
+
+Csomopont* KLista::ujCsomopontBillentyuzetrol() {
+	Csomopont *temp;
+	string foglalkozas;
+	int m;
+	
+	temp = new Csomopont;
+	cout << "Hany lakos?\n";
+	cin >> m;
+	temp->lakos_sz = m;
+	cout << "Kerem adja meg mindeniknek a foglalkozasat:\n";
+	for (int j = 0; j < m; j++) {
+		cin >> foglalkozas;
+		if (temp->lakosok.find(foglalkozas) == temp->lakosok.end())	//nincs meg ilyen foglalkozas
+			temp->lakosok.insert(pair<string, int>(foglalkozas, 1));
+		else
+			temp->lakosok[foglalkozas]++;
+	}
+
+	return temp;
+}
+
+void KLista::ujCsomopont() {
+	Csomopont *uj, *hova;
+	string valaszt;
+	int ind;
+	
+	uj = ujCsomopontBillentyuzetrol();
+
+	cout << "Csomopont ele, vagy csomopont utan szurjuk? (ele / utan)\n";
+	cin >> valaszt;
+	cout << "Hanyadik elem " << valaszt << " szeretne beszurni?\n";
+	cin >> ind;
+	
+	hova = teritAdottIndexnel(ind);
+	if (valaszt == "ele")
+		beszurEle(hova, uj);
+	else
+		beszurUtan(hova, uj);
+
+}
+
+Csomopont* KLista::teritAdottIndexnel(int i) {
+// terit egy mutatot az (1-tol indexelve) i-edik elemre
+	Csomopont* it;
+	int n;
+
+	n = teritHossz();
+	it = fej;
+	for (int k = 0; k < (i - 1) % n; k++)
+		it = it->next;
+	return it;
 }
