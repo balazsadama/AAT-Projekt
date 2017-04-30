@@ -29,9 +29,11 @@ public:
 	void beszurUtan(Csomopont *p, Csomopont *uj);
 	void olvasBillenytuzetrol(int);
 	void olvasFilebol(ifstream&);
-	Csomopont* ujCsomopontBillentyuzetrol();
-	void ujCsomopont();
+	Csomopont* ujCspontOlvasBillentyuzetrol();
+	void ujCspontBeszurBillentyuzetrol();
 	Csomopont* teritAdottIndexnel(int);
+	Csomopont* ujCspontOlvasFilebol(ifstream&);
+	void ujCspontBeszurFilebol(ifstream&);
 };
 
 KLista::KLista() {
@@ -185,7 +187,7 @@ void KLista::olvasFilebol(ifstream& f) {
 	string foglalkozas;
 	Csomopont *temp, *prev;
 
-	prev = fej;
+	prev = 0;
 	f >> n;
 	do {
 		temp = new Csomopont;
@@ -208,10 +210,9 @@ void KLista::olvasFilebol(ifstream& f) {
 		temp->next = fej;
 		n--;
 	} while (n != 0);
-	f.close();
 }
 
-Csomopont* KLista::ujCsomopontBillentyuzetrol() {
+Csomopont* KLista::ujCspontOlvasBillentyuzetrol() {
 	Csomopont *temp;
 	string foglalkozas;
 	int m;
@@ -232,12 +233,12 @@ Csomopont* KLista::ujCsomopontBillentyuzetrol() {
 	return temp;
 }
 
-void KLista::ujCsomopont() {
+void KLista::ujCspontBeszurBillentyuzetrol() {
 	Csomopont *uj, *hova;
 	string valaszt;
 	int ind;
 	
-	uj = ujCsomopontBillentyuzetrol();
+	uj = ujCspontOlvasBillentyuzetrol();
 
 	cout << "Csomopont ele, vagy csomopont utan szurjuk? (ele / utan)\n";
 	cin >> valaszt;
@@ -249,7 +250,6 @@ void KLista::ujCsomopont() {
 		beszurEle(hova, uj);
 	else
 		beszurUtan(hova, uj);
-
 }
 
 Csomopont* KLista::teritAdottIndexnel(int i) {
@@ -262,4 +262,40 @@ Csomopont* KLista::teritAdottIndexnel(int i) {
 	for (int k = 0; k < (i - 1) % n; k++)
 		it = it->next;
 	return it;
+}
+
+Csomopont* KLista::ujCspontOlvasFilebol(ifstream& f) {
+	Csomopont *temp;
+	string foglalkozas;
+	int m;
+
+	temp = new Csomopont;
+	f >> m;
+	temp->lakos_sz = m;
+	for (int j = 0; j < m; j++) {
+		f >> foglalkozas;
+		if (temp->lakosok.find(foglalkozas) == temp->lakosok.end())	//nincs meg ilyen foglalkozas
+			temp->lakosok.insert(pair<string, int>(foglalkozas, 1));
+		else
+			temp->lakosok[foglalkozas]++;
+	}
+
+	return temp;
+}
+
+void KLista::ujCspontBeszurFilebol(ifstream& f) {
+	Csomopont *uj, *hova;
+	string valaszt;
+	int ind;
+
+	uj = ujCspontOlvasFilebol(f);
+
+	f >> valaszt;
+	f >> ind;
+
+	hova = teritAdottIndexnel(ind);
+	if (valaszt == "ele")
+		beszurEle(hova, uj);
+	else
+		beszurUtan(hova, uj);
 }
