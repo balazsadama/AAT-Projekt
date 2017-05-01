@@ -39,7 +39,6 @@ void valaszt(int v) {
 				cout << "Beolvasas sikeres.\n";
 			else {
 				cout << "Beolvasas sikertelen, hibas bemeneti adatok.\n";
-				//kl->urit();
 				kl->~KLista();
 			}
 		}
@@ -48,7 +47,6 @@ void valaszt(int v) {
 				cout << "Beolvasas sikeres.\n";
 			else {
 				cout << "Beolvasas sikertelen, hibas bemeneti adatok.\n";
-				//kl->urit();
 				kl->~KLista();
 			}
 		}

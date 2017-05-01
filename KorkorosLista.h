@@ -40,13 +40,13 @@ public:
 };
 
 KLista::KLista() {
-// megfelel az Init() fuggvenynek, letrehoz egy ures Korkoros Listat
+	// megfelel az Init() fuggvenynek, letrehoz egy ures Korkoros Listat
 
 	fej = 0;
 }
 
 void KLista::init() {
-// kezdoertekkent
+	// kezdoertekkent
 	fej = 0;
 }
 
@@ -70,11 +70,11 @@ void KLista::kiir() {
 }
 
 int KLista::teritHossz() {
-// visszateriti, hogy hany csomopontot tartalmaz a lista
+	// visszateriti, hogy hany csomopontot tartalmaz a lista
 
 	int count = 0;
 	Csomopont *it;
-	
+
 	if (fej != 0) {
 		count++;
 		it = fej->next;
@@ -88,7 +88,7 @@ int KLista::teritHossz() {
 }
 
 bool KLista::ures() {
-// ha egyetlen csomopontot sem tartalmaz a lista, akkor igaz erteket terit vissza
+	// ha egyetlen csomopontot sem tartalmaz a lista, akkor igaz erteket terit vissza
 
 	if (teritHossz() == 0)
 		return true;
@@ -96,7 +96,7 @@ bool KLista::ures() {
 }
 
 bool KLista::tele() {
-// ha MAX_CSOMOPONT szamu csomopontbol all a lista, akkor igaz erteket terit vissza
+	// ha MAX_CSOMOPONT szamu csomopontbol all a lista, akkor igaz erteket terit vissza
 
 	if (teritHossz() == MAX_CSOMOPONT)
 		return true;
@@ -104,7 +104,7 @@ bool KLista::tele() {
 }
 
 KLista::~KLista() {
-// a program vegen kitorli a csomopontokat, felszabaditja a memoriat
+	// a program vegen kitorli a csomopontokat, felszabaditja a memoriat
 	Csomopont *to_del, *it;
 
 	if (fej != 0) {
@@ -161,14 +161,14 @@ void KLista::beszurUtan(Csomopont *p, Csomopont *uj) {
 	p->next = uj;
 }
 
+// hibakezeles mukodik
 int KLista::olvasBillenytuzetrol() {
 	// parameterkent kap egy helyes csomopontszamot, hibakezeles mas alprogramban
 	int m, n;
 	Csomopont *temp, *prev;
 	string foglalkozas, num;
-	
+
 	cout << "Hany modulbol fog allni az urallomas?\n";
-	//cin >> n;
 	cin >> num;
 	if (isNumeric(num))
 		n = stoi(num);
@@ -209,13 +209,13 @@ int KLista::olvasBillenytuzetrol() {
 			fej = temp;
 			temp->next = fej;
 		}
-		else 
+		else
 			beszurUtan(prev, temp);
 		prev = temp;
 	}
 
 	return 1;
-}
+}		// hibakezeles mukodik
 
 int KLista::olvasFilebol(ifstream& f) {
 	int n;
@@ -234,13 +234,12 @@ int KLista::olvasFilebol(ifstream& f) {
 
 	do {
 		temp = new Csomopont;
-		//f >> temp->lakos_sz;
 		f >> num;
 		if (isNumeric(num))
 			temp->lakos_sz = stoi(num);
 		else {
 			delete[] temp;
-			return (0);
+			return 0;
 		}
 
 		if (temp->lakos_sz < 0) {
@@ -274,7 +273,7 @@ Csomopont* KLista::ujCspontOlvasBillentyuzetrol() {
 	Csomopont *temp;
 	string foglalkozas;
 	int m;
-	
+
 	temp = new Csomopont;
 	cout << "Hany lakos?\n";
 	cin >> m;
@@ -295,14 +294,14 @@ void KLista::ujCspontBeszurBillentyuzetrol() {
 	Csomopont *uj, *hova;
 	string valaszt;
 	int ind;
-	
+
 	uj = ujCspontOlvasBillentyuzetrol();
 
 	cout << "Csomopont ele, vagy csomopont utan szurjuk? (ele / utan)\n";
 	cin >> valaszt;
 	cout << "Hanyadik elem " << valaszt << " szeretne beszurni?\n";
 	cin >> ind;
-	
+
 	hova = teritAdottIndexnel(ind);
 	if (valaszt == "ele")
 		beszurEle(hova, uj);
@@ -311,7 +310,7 @@ void KLista::ujCspontBeszurBillentyuzetrol() {
 }
 
 Csomopont* KLista::teritAdottIndexnel(int i) {
-// terit egy mutatot az (1-tol indexelve) i-edik elemre
+	// terit egy mutatot az (1-tol indexelve) i-edik elemre
 	Csomopont* it;
 	int n;
 
@@ -368,7 +367,11 @@ void KLista::ujCspontBeszurFilebol(ifstream& f) {
 }
 
 bool KLista::isNumeric(string str) {
-	for (int i = 0; i < str.length(); i++)
+	
+	if (str[0] < '0' || str[0] > '9')
+		if (str[0] != '-')
+			return false;
+	for (int i = 1; i < str.length(); i++)
 		if (str[i] < '0' || str[i] > '9')
 			return false;
 	return true;
