@@ -4,6 +4,7 @@ KLista* kl;
 ifstream f("input1.txt");
 
 void menuKiir() {
+	cout << "->Menu<-\n";
 	cout << "1. Letrehoz\n";
 	cout << "2. Feltolt\n";
 	cout << "3. Lekerdez egy modul tartalmat\n";
@@ -78,13 +79,33 @@ void valaszt(int v) {
 			cout << "Allomanybol vagy billentyuzetrol szeretne beszurni? (allomany/billentyuzet)\n";
 			cin >> s;
 			if (s == "allomany")
-				kl->ujCspontBeszurFilebol(f);
+				if (!f.eof())
+					kl->ujCspontBeszurFilebol(f);
+				else
+					cout << "Beszuras sikertelen, az allomanyban nincs tobb adat.\n";
 			else if (s == "billentyuzet")
 				kl->ujCspontBeszurBillentyuzetrol();
 			else
 				cout << "Nincs ilyen valasztasi lehetoseg.\n";
 		}
 		break;
+	}
+
+	case 8: {
+		if (kl->ures())
+			cout << "Nem lehetseges torolni, az urallomas nem tartalmaz modulokat.\n";
+		else {
+			int ind;
+
+			cout << "Hanyadik modult szeretne eltavolitani az urallomasbol?\n";
+			cin >> ind;
+			if (ind < 1)
+				cout << "A megadott sorszam helytelen.\n";
+			else {
+				kl->torol(kl->teritAdottIndexnel(ind));
+				cout << "Modul sikeresen eltavolitva.\n";
+			}
+		}
 	}
 	}
 }
