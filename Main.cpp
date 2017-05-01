@@ -15,11 +15,13 @@ void menuKiir() {
 	cout << "8. Uj modul beszurasa\n";
 	cout << "9. Modul torlese\n";
 	cout << "0. Kilepes\n";
+	cout << "Kerem valasszon egy muveletet: ";
 }
 
 
 void valaszt(int v) {
 	switch (v) {
+	case 0: break;
 	case 1: {
 		if (kl == 0) {
 			kl = new KLista;	// meghivodik a konstruktor, ami a fej mutatot nullra allitja
@@ -135,16 +137,28 @@ void valaszt(int v) {
 			cout << "Nem lehetseges torolni, az urallomas nem tartalmaz modulokat.\n";
 		else {
 			int ind;
+			string num;
 
 			cout << "Hanyadik modult szeretne eltavolitani az urallomasbol?\n";
-			cin >> ind;
-			if (ind < 1)
-				cout << "A megadott sorszam helytelen.\n";
-			else {
-				kl->torol(kl->teritAdottIndexnel(ind));
-				cout << "Modul sikeresen eltavolitva.\n";
+			cin >> num;
+
+			if (kl->isNumeric(num)) {
+				ind = stoi(num);
+				if (ind >= 1) {
+					kl->torol(kl->teritAdottIndexnel(ind));
+					cout << "Modul sikeresen eltavolitva.\n";
+				}
+				else
+					cout << "A megadott index helytelen.\n";
 			}
+			else
+				cout << "A megadott index helytelen.\n";
 		}
+		break;
+	}
+
+	default: {
+		cout << "Nincs ilyen sorszamu muvelet, kerem valasszon a felsoroltak kozul.\n";
 		break;
 	}
 	}
