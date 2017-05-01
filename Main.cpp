@@ -8,11 +8,12 @@ void menuKiir() {
 	cout << "1. Letrehoz\n";
 	cout << "2. Feltolt\n";
 	cout << "3. Lekerdez egy modul tartalmat\n";
-	cout << "4. Urallomas kiirasa\n";
-	cout << "5. Ures-e\n";			// ez a ketto 
-	cout << "6. Tele van-e\n";		// lehet nem kell ide
-	cout << "7. Uj modul beszurasa\n";
-	cout << "8. Modul torlese\n";
+	cout << "4. Urallomas kiiratasa\n";
+	cout << "5. Ures-e\n";
+	cout << "6. Tele van-e\n";
+	cout << "7. Modulok darabszamanak kiiratasa\n";
+	cout << "8. Uj modul beszurasa\n";
+	cout << "9. Modul torlese\n";
 	cout << "0. Kilepes\n";
 }
 
@@ -51,7 +52,10 @@ void valaszt(int v) {
 	}
 
 	case 4: {
-		kl->kiir();
+		if (kl->ures())
+			cout << "Az urallomas nem tartalmaz modulokat.\n";
+		else
+			kl->kiir();
 		break;
 	}
 
@@ -72,6 +76,11 @@ void valaszt(int v) {
 	}
 
 	case 7: {
+		cout << "Az urallomas jelenleg " << kl->teritHossz() << " darab modulbol all.\n";
+		break;
+	}
+
+	case 8: {
 		if (kl->tele())
 			cout << "Nem lehetseges beszurni, az urallomas mar maximalis szamu modult tartalmaz.\n";
 		else {
@@ -91,7 +100,7 @@ void valaszt(int v) {
 		break;
 	}
 
-	case 8: {
+	case 9: {
 		if (kl->ures())
 			cout << "Nem lehetseges torolni, az urallomas nem tartalmaz modulokat.\n";
 		else {
@@ -106,6 +115,7 @@ void valaszt(int v) {
 				cout << "Modul sikeresen eltavolitva.\n";
 			}
 		}
+		break;
 	}
 	}
 }
