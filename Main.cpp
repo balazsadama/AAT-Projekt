@@ -88,12 +88,16 @@ void valaszt(int v) {
 			cout << "Allomanybol vagy billentyuzetrol szeretne beszurni? (allomany/billentyuzet)\n";
 			cin >> s;
 			if (s == "allomany")
-				if (!f.eof())
+				if (!f.eof()) {
 					kl->ujCspontBeszurFilebol(f);
+					cout << "Sikeresen hozzaadtuk az uj modult az urallomashoz.\n";
+				}
 				else
 					cout << "Beszuras sikertelen, az allomanyban nincs tobb adat.\n";
-			else if (s == "billentyuzet")
+			else if (s == "billentyuzet") {
 				kl->ujCspontBeszurBillentyuzetrol();
+				cout << "Sikeresen hozzaadtuk az uj modult az urallomashoz.\n";
+			}
 			else
 				cout << "Nincs ilyen valasztasi lehetoseg.\n";
 		}

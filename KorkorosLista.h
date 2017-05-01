@@ -51,16 +51,21 @@ void KLista::init() {
 
 void KLista::kiir() {
 	Csomopont *p;
+	int count = 1;
 
 	p = fej;
-	if (fej != 0) do {
-		cout << p->lakos_sz << " lakos: ";
-		for (map<string, int>::iterator it = p->lakosok.begin(); it != p->lakosok.end(); it++)
-			cout << it->first << ": " << it->second << '\t';
+	if (fej != 0) {
+		cout << endl << "Az urallomast a kovetkezo modul(ok) alkotja(k):\n";
+		do {
+			cout << count++ << ".modul-> ";
+			cout << p->lakos_sz << " lakos: ";
+			for (map<string, int>::iterator it = p->lakosok.begin(); it != p->lakosok.end(); it++)
+				cout << it->first << ": " << it->second << '\t';
+			cout << endl;
+			p = p->next;
+		} while (p != fej);
 		cout << endl;
-		p = p->next;
-	} while (p != fej);
-	cout << endl << endl;
+	}
 }
 
 int KLista::teritHossz() {
