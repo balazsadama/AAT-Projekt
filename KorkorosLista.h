@@ -31,7 +31,7 @@ public:
 	int olvasBillenytuzetrol();
 	int olvasFilebol(ifstream&);
 	Csomopont* ujCspontOlvasBillentyuzetrol();
-	void ujCspontBeszurBillentyuzetrol();
+	int ujCspontBeszurBillentyuzetrol();
 	Csomopont* teritAdottIndexnel(int);
 	void kiirCsomopont(int);
 	Csomopont* ujCspontOlvasFilebol(ifstream&);
@@ -270,12 +270,25 @@ int KLista::olvasFilebol(ifstream& f) {
 
 Csomopont* KLista::ujCspontOlvasBillentyuzetrol() {
 	Csomopont *temp;
-	string foglalkozas;
+	string foglalkozas, num;
 	int m;
 
 	temp = new Csomopont;
 	cout << "Hany lakos?\n";
-	cin >> m;
+	cin >> num;
+
+	if (isNumeric(num)) {
+		m = stoi(num);
+		if (m < 0) {
+			delete temp;
+			return 0;
+		}
+	}
+	else {
+		delete temp;
+		return 0;
+	}
+
 	temp->lakos_sz = m;
 	cout << "Kerem adja meg mindeniknek a foglalkozasat:\n";
 	for (int j = 0; j < m; j++) {
@@ -289,23 +302,36 @@ Csomopont* KLista::ujCspontOlvasBillentyuzetrol() {
 	return temp;
 }
 
-void KLista::ujCspontBeszurBillentyuzetrol() {
+int KLista::ujCspontBeszurBillentyuzetrol() {
 	Csomopont *uj, *hova;
-	string valaszt;
+	string valaszt, num;
 	int ind;
 
 	uj = ujCspontOlvasBillentyuzetrol();
 
+	if (uj == 0)
+		return 0;
+
 	cout << "Csomopont ele, vagy csomopont utan szurjuk? (ele / utan)\n";
 	cin >> valaszt;
 	cout << "Hanyadik elem " << valaszt << " szeretne beszurni?\n";
-	cin >> ind;
+	cin >> num;
+
+	if (isNumeric(num)) {
+		ind = stoi(num);
+		if (ind <= 0)
+			return 0;
+	}
+	else
+		return 0;
 
 	hova = teritAdottIndexnel(ind);
 	if (valaszt == "ele")
 		beszurEle(hova, uj);
-	else
+	else if (valaszt == "utan")
 		beszurUtan(hova, uj);
+	else
+		return 0;
 }
 
 Csomopont* KLista::teritAdottIndexnel(int i) {
@@ -386,6 +412,7 @@ int KLista::ujCspontBeszurFilebol(ifstream& f) {
 		beszurUtan(hova, uj);
 	else
 		return 0;
+	return 1;
 }
 
 bool KLista::isNumeric(string str) {
@@ -393,7 +420,7 @@ bool KLista::isNumeric(string str) {
 	if (str[0] < '0' || str[0] > '9')
 		if (str[0] != '-')
 			return false;
-	for (int i = 1; i < str.length(); i++)
+	for (unsigned int i = 1; i < str.length(); i++)
 		if (str[i] < '0' || str[i] > '9')
 			return false;
 	return true;

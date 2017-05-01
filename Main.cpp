@@ -119,8 +119,10 @@ void valaszt(int v) {
 				else
 					cout << "Beszuras sikertelen, az allomanyban nincs tobb adat.\n";
 			else if (s == "billentyuzet") {
-				kl->ujCspontBeszurBillentyuzetrol();
-				cout << "Sikeresen hozzaadtuk az uj modult az urallomashoz.\n";
+				if (kl->ujCspontBeszurBillentyuzetrol())
+					cout << "Sikeresen hozzaadtuk az uj modult az urallomashoz.\n";
+				else
+					cout << "Beszuras sikertelen, hibas bemeneti adatok.\n";
 			}
 			else
 				cout << "Nincs ilyen valasztasi lehetoseg.\n";
