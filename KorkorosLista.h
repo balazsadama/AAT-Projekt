@@ -16,6 +16,7 @@ struct Csomopont {
 class KLista {
 private:
 	Csomopont *fej;
+	bool isNumeric(string str);
 public:
 	KLista();		// itt hagyom h ha elfelejt a felhasznalo init-elni, megis mukodjon a program
 	void init();
@@ -28,8 +29,8 @@ public:
 	Csomopont* teritFej() { return fej; }	// tesztelni, hogy a main-bol tudjunk
 	void beszurEle(Csomopont *p, Csomopont *uj);
 	void beszurUtan(Csomopont *p, Csomopont *uj);
-	void olvasBillenytuzetrol();
-	void olvasFilebol(ifstream&);
+	int olvasBillenytuzetrol();
+	int olvasFilebol(ifstream&);
 	Csomopont* ujCspontOlvasBillentyuzetrol();
 	void ujCspontBeszurBillentyuzetrol();
 	Csomopont* teritAdottIndexnel(int);
@@ -113,6 +114,7 @@ KLista::~KLista() {
 			it = it->next;
 			delete to_del;
 		} while (it != fej);
+		fej = 0;
 	}
 }
 
@@ -159,25 +161,45 @@ void KLista::beszurUtan(Csomopont *p, Csomopont *uj) {
 	p->next = uj;
 }
 
-void KLista::olvasBillenytuzetrol() {
+int KLista::olvasBillenytuzetrol() {
 	// parameterkent kap egy helyes csomopontszamot, hibakezeles mas alprogramban
 	int m, n;
 	Csomopont *temp, *prev;
-	string foglalkozas;
+	string foglalkozas, num;
 	
 	cout << "Hany modulbol fog allni az urallomas?\n";
-	cin >> n;
+	//cin >> n;
+	cin >> num;
+	if (isNumeric(num))
+		n = stoi(num);
+	else
+		return (0);
+
+	if (n < 0 || n > MAX_CSOMOPONT)
+		return 0;
 
 	prev = fej;
 	for (int i = 0; i < n; i++) {
 		temp = new Csomopont;
 		cout << "Hany lakos?\n";
-		cin >> m;
+		cin >> num;
+		if (isNumeric(num))
+			m = stoi(num);
+		else {
+			delete temp;
+			return (0);
+		}
+
+		if (m < 0) {
+			delete temp;
+			return 0;
+		}
+
 		temp->lakos_sz = m;
 		cout << "Kerem adja meg mindeniknek a foglalkozasat:\n";
 		for (int j = 0; j < m; j++) {
 			cin >> foglalkozas;
-			if (temp->lakosok.find(foglalkozas) == temp->lakosok.end())	//nincs meg ilyen foglalkozas
+			if (temp->lakosok.find(foglalkozas) == temp->lakosok.end())	// ha nincs meg ilyen foglalkozas
 				temp->lakosok.insert(pair<string, int>(foglalkozas, 1));
 			else
 				temp->lakosok[foglalkozas]++;
@@ -191,18 +213,41 @@ void KLista::olvasBillenytuzetrol() {
 			beszurUtan(prev, temp);
 		prev = temp;
 	}
+
+	return 1;
 }
 
-void KLista::olvasFilebol(ifstream& f) {
+int KLista::olvasFilebol(ifstream& f) {
 	int n;
-	string foglalkozas;
+	string foglalkozas, num;
 	Csomopont *temp, *prev;
 
 	prev = 0;
-	f >> n;
+	f >> num;
+	if (isNumeric(num))
+		n = stoi(num);
+	else
+		return (0);
+
+	if (n < 0 || n > MAX_CSOMOPONT)
+		return 0;
+
 	do {
 		temp = new Csomopont;
-		f >> temp->lakos_sz;
+		//f >> temp->lakos_sz;
+		f >> num;
+		if (isNumeric(num))
+			temp->lakos_sz = stoi(num);
+		else {
+			delete[] temp;
+			return (0);
+		}
+
+		if (temp->lakos_sz < 0) {
+			delete temp;
+			return 0;
+		}
+
 		for (int i = 0; i < temp->lakos_sz; i++) {
 			f >> foglalkozas;
 			if (temp->lakosok.find(foglalkozas) == temp->lakosok.end())	//nincs meg ilyen foglalkozas
@@ -221,6 +266,8 @@ void KLista::olvasFilebol(ifstream& f) {
 		temp->next = fej;
 		n--;
 	} while (n != 0);
+
+	return 1;
 }
 
 Csomopont* KLista::ujCspontOlvasBillentyuzetrol() {
@@ -318,4 +365,11 @@ void KLista::ujCspontBeszurFilebol(ifstream& f) {
 		beszurEle(hova, uj);
 	else
 		beszurUtan(hova, uj);
+}
+
+bool KLista::isNumeric(string str) {
+	for (int i = 0; i < str.length(); i++)
+		if (str[i] < '0' || str[i] > '9')
+			return false;
+	return true;
 }

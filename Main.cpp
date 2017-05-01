@@ -4,7 +4,7 @@ KLista* kl;
 ifstream f("input1.txt");
 
 void menuKiir() {
-	cout << "->Menu<-\n";
+	cout << "\n->Menu<-\n";
 	cout << "1. Letrehoz\n";
 	cout << "2. Feltolt\n";
 	cout << "3. Lekerdez egy modul tartalmat\n";
@@ -34,10 +34,24 @@ void valaszt(int v) {
 		string s;
 		cout << "Allomanybol vagy billentyuzetrol szeretne beolvasni? (allomany/billentyuzet)\n";
 		cin >> s;
-		if (s == "allomany")
-			kl->olvasFilebol(f);
-		else if (s == "billentyuzet")
-			kl->olvasBillenytuzetrol();
+		if (s == "allomany") {
+			if (kl->olvasFilebol(f))
+				cout << "Beolvasas sikeres.\n";
+			else {
+				cout << "Beolvasas sikertelen, hibas bemeneti adatok.\n";
+				//kl->urit();
+				kl->~KLista();
+			}
+		}
+		else if (s == "billentyuzet") {
+			if (kl->olvasBillenytuzetrol())
+				cout << "Beolvasas sikeres.\n";
+			else {
+				cout << "Beolvasas sikertelen, hibas bemeneti adatok.\n";
+				//kl->urit();
+				kl->~KLista();
+			}
+		}
 		else
 			cout << "Nincs ilyen valasztasi lehetoseg.\n";
 		break;
