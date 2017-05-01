@@ -111,8 +111,10 @@ void valaszt(int v) {
 			cin >> s;
 			if (s == "allomany")
 				if (!f.eof()) {
-					kl->ujCspontBeszurFilebol(f);
-					cout << "Sikeresen hozzaadtuk az uj modult az urallomashoz.\n";
+					if (kl->ujCspontBeszurFilebol(f))
+						cout << "Sikeresen hozzaadtuk az uj modult az urallomashoz.\n";
+					else
+						cout << "Beszuras sikertelen, hibas bemeneti adatok.\n";
 				}
 				else
 					cout << "Beszuras sikertelen, az allomanyban nincs tobb adat.\n";

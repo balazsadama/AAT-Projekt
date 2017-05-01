@@ -35,7 +35,7 @@ public:
 	Csomopont* teritAdottIndexnel(int);
 	void kiirCsomopont(int);
 	Csomopont* ujCspontOlvasFilebol(ifstream&);
-	void ujCspontBeszurFilebol(ifstream&);
+	int ujCspontBeszurFilebol(ifstream&);
 	bool isNumeric(string str);
 };
 
@@ -331,13 +331,23 @@ void KLista::kiirCsomopont(int ind) {
 
 Csomopont* KLista::ujCspontOlvasFilebol(ifstream& f) {
 	Csomopont *temp;
-	string foglalkozas;
-	int m;
+	string foglalkozas, num;
 
 	temp = new Csomopont;
-	f >> m;
-	temp->lakos_sz = m;
-	for (int j = 0; j < m; j++) {
+	f >> num;
+	if (isNumeric(num))
+		temp->lakos_sz = stoi(num);
+	else {
+		delete temp;
+		return 0;
+	}
+
+	if (temp->lakos_sz < 0) {
+		delete temp;
+		return 0;
+	}
+	
+	for (int j = 0; j < temp->lakos_sz; j++) {
 		f >> foglalkozas;
 		if (temp->lakosok.find(foglalkozas) == temp->lakosok.end())	//nincs meg ilyen foglalkozas
 			temp->lakosok.insert(pair<string, int>(foglalkozas, 1));
@@ -348,21 +358,34 @@ Csomopont* KLista::ujCspontOlvasFilebol(ifstream& f) {
 	return temp;
 }
 
-void KLista::ujCspontBeszurFilebol(ifstream& f) {
+int KLista::ujCspontBeszurFilebol(ifstream& f) {
 	Csomopont *uj, *hova;
-	string valaszt;
-	int ind;
+	string valaszt, ind;
+	int m;
 
 	uj = ujCspontOlvasFilebol(f);
+
+	if (uj == 0)		// ha sikertelen volt a beolvasas, sikertelen lesz a beszuras is
+		return 0;
 
 	f >> valaszt;
 	f >> ind;
 
-	hova = teritAdottIndexnel(ind);
+	if (isNumeric(ind)) {
+		m = stoi(ind);
+		if (m <= 0)
+			return 0;
+	}
+	else
+		return 0;
+
+	hova = teritAdottIndexnel(m);
 	if (valaszt == "ele")
 		beszurEle(hova, uj);
-	else
+	else if (valaszt == "utan")
 		beszurUtan(hova, uj);
+	else
+		return 0;
 }
 
 bool KLista::isNumeric(string str) {
