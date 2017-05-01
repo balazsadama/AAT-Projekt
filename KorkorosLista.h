@@ -16,7 +16,6 @@ struct Csomopont {
 class KLista {
 private:
 	Csomopont *fej;
-	bool isNumeric(string str);
 public:
 	KLista();		// itt hagyom h ha elfelejt a felhasznalo init-elni, megis mukodjon a program
 	void init();
@@ -37,6 +36,7 @@ public:
 	void kiirCsomopont(int);
 	Csomopont* ujCspontOlvasFilebol(ifstream&);
 	void ujCspontBeszurFilebol(ifstream&);
+	bool isNumeric(string str);
 };
 
 KLista::KLista() {
@@ -161,7 +161,6 @@ void KLista::beszurUtan(Csomopont *p, Csomopont *uj) {
 	p->next = uj;
 }
 
-// hibakezeles mukodik
 int KLista::olvasBillenytuzetrol() {
 	// parameterkent kap egy helyes csomopontszamot, hibakezeles mas alprogramban
 	int m, n;
@@ -215,7 +214,7 @@ int KLista::olvasBillenytuzetrol() {
 	}
 
 	return 1;
-}		// hibakezeles mukodik
+}
 
 int KLista::olvasFilebol(ifstream& f) {
 	int n;

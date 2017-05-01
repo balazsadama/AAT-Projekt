@@ -56,10 +56,20 @@ void valaszt(int v) {
 	}
 
 	case 3: {
-		int ind;
+		string ind;
+		int n;
+
 		cout << "Hanyadik modul adatait szeretne megtekinteni?\n";
 		cin >> ind;
-		kl->kiirCsomopont(ind);
+		if (kl->isNumeric(ind)) {
+			n = stoi(ind);
+			if (n >= 0)
+				kl->kiirCsomopont(n);
+			else
+				cout << "Kiiras sikertelen, hibas bemeneti adat.\n";
+		}
+		else
+			cout << "Kiiras sikertelen, hibas bemeneti adat.\n";
 		break;
 	}
 
