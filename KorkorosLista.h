@@ -17,7 +17,8 @@ class KLista {
 private:
 	Csomopont *fej;
 public:
-	KLista();
+	KLista();		// itt hagyom h ha elfelejt a felhasznalo init-elni, megis mukodjon a program
+	void init();
 	~KLista();
 	int teritHossz();
 	bool ures();
@@ -27,11 +28,12 @@ public:
 	Csomopont* teritFej() { return fej; }	// tesztelni, hogy a main-bol tudjunk
 	void beszurEle(Csomopont *p, Csomopont *uj);
 	void beszurUtan(Csomopont *p, Csomopont *uj);
-	void olvasBillenytuzetrol(int);
+	void olvasBillenytuzetrol();
 	void olvasFilebol(ifstream&);
 	Csomopont* ujCspontOlvasBillentyuzetrol();
 	void ujCspontBeszurBillentyuzetrol();
 	Csomopont* teritAdottIndexnel(int);
+	void kiirCsomopont(int);
 	Csomopont* ujCspontOlvasFilebol(ifstream&);
 	void ujCspontBeszurFilebol(ifstream&);
 };
@@ -42,15 +44,18 @@ KLista::KLista() {
 	fej = 0;
 }
 
+void KLista::init() {
+// kezdoertekkent
+	fej = 0;
+}
+
 void KLista::kiir() {
 	Csomopont *p;
 
 	p = fej;
 	if (fej != 0) do {
-		//cout << "Lakosok szama : " << p->lakos_sz << endl;
 		cout << p->lakos_sz << " lakos: ";
 		for (map<string, int>::iterator it = p->lakosok.begin(); it != p->lakosok.end(); it++)
-			//cout << it->first << '\t' << it->second << endl;
 			cout << it->first << ": " << it->second << '\t';
 		cout << endl;
 		p = p->next;
@@ -149,14 +154,15 @@ void KLista::beszurUtan(Csomopont *p, Csomopont *uj) {
 	p->next = uj;
 }
 
-void KLista::olvasBillenytuzetrol(int n) {
+void KLista::olvasBillenytuzetrol() {
 	// parameterkent kap egy helyes csomopontszamot, hibakezeles mas alprogramban
-	int m;
+	int m, n;
 	Csomopont *temp, *prev;
 	string foglalkozas;
 	
-	//fej = 0;
-	//prev = 0;
+	cout << "Hany modulbol fog allni az urallomas?\n";
+	cin >> n;
+
 	prev = fej;
 	for (int i = 0; i < n; i++) {
 		temp = new Csomopont;
@@ -262,6 +268,15 @@ Csomopont* KLista::teritAdottIndexnel(int i) {
 	for (int k = 0; k < (i - 1) % n; k++)
 		it = it->next;
 	return it;
+}
+
+void KLista::kiirCsomopont(int ind) {
+	Csomopont* cs = teritAdottIndexnel(ind);
+
+	cout << cs->lakos_sz << " lakos: ";
+	for (map<string, int>::iterator it = cs->lakosok.begin(); it != cs->lakosok.end(); it++)
+		cout << it->first << ": " << it->second << '\t';
+	cout << endl;
 }
 
 Csomopont* KLista::ujCspontOlvasFilebol(ifstream& f) {
