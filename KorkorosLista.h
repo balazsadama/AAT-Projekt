@@ -314,6 +314,10 @@ int KLista::ujCspontBeszurBillentyuzetrol() {
 
 	cout << "Csomopont ele, vagy csomopont utan szurjuk? (ele / utan)\n";
 	cin >> valaszt;
+
+	if (valaszt != "ele" && valaszt != "utan")
+		return 0;
+
 	cout << "Hanyadik elem " << valaszt << " szeretne beszurni?\n";
 	cin >> num;
 
@@ -395,6 +399,10 @@ int KLista::ujCspontBeszurFilebol(ifstream& f) {
 		return 0;
 
 	f >> valaszt;
+
+	if (valaszt != "ele" && valaszt != "utan")	/* this is new */
+		return 0;
+
 	f >> ind;
 
 	if (isNumeric(ind)) {
