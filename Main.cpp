@@ -1,151 +1,112 @@
 #include "KorkorosLista.h"
 
-KLista* kl;
-ifstream f("input1.txt");
+ifstream f("input2.txt");
+ifstream g(stdin);
+KLista kl;
 
 void menuKiir() {
 	cout << "\n->Menu<-\n";
-	cout << "1. Letrehoz\n";
-	cout << "2. Feltolt\n";
-	cout << "3. Lekerdez egy modul tartalmat\n";
-	cout << "4. Urallomas kiiratasa\n";
-	cout << "5. Ures-e\n";
-	cout << "6. Tele van-e\n";
-	cout << "7. Modulok darabszamanak kiiratasa\n";
-	cout << "8. Uj modul beszurasa\n";
-	cout << "9. Modul torlese\n";
+	cout << "1. Feltolt\n";
+	cout << "2. Egy modul kiiratasa\n";
+	cout << "3. Osszes modul kiiratasa\n";
+	cout << "4. Modulok darabszamanak kiiratasa\n";
+	cout << "5. Uj modul hozzaadasa\n";
+	cout << "6. Modul torlese\n";
+	cout << "7. Uj szemely adatainak beolvasasa\n";
+	cout << "8. Szemely torlese a nyilvantartasbol\n";
+	cout << "9. Ev eltelese\n";
 	cout << "0. Kilepes\n";
 	cout << "Kerem valasszon egy muveletet: ";
 }
-
 
 void valaszt(int v) {
 	switch (v) {
 	case 0: break;
 	case 1: {
-		if (kl == 0) {
-			kl = new KLista;	// meghivodik a konstruktor, ami a fej mutatot nullra allitja
-			cout << "Letrehozas sikeres.\n";
-		}
-		else
-			cout << "Az urallomas mar letre volt hozva!\n";
-		break;
-	}
+		char c;
 
-	case 2: {
-		string s;
-		cout << "Allomanybol vagy billentyuzetrol szeretne beolvasni? (allomany/billentyuzet)\n";
-		cin >> s;
-		if (s == "allomany") {
-			if (kl->olvasFilebol(f))
+		cout << "Allomanybol vagy billentyuzetrol szeretne beolvasni? (a/b)\n";
+		cin >> c;
+		if (c == 'a')
+			if (kl.olvas(f, 0))
+				cout << "Beolvasas sikeres\n";
+			else {
+				cout << "Beolvasas sikertelen, hibas bemeneti adatok.\n";
+				kl.~KLista();
+			}
+		else if (c == 'b')
+			if (kl.olvas(g, 1))
 				cout << "Beolvasas sikeres.\n";
 			else {
 				cout << "Beolvasas sikertelen, hibas bemeneti adatok.\n";
-				kl->~KLista();
+				kl.~KLista();
 			}
-		}
-		else if (s == "billentyuzet") {
-			if (kl->olvasBillenytuzetrol())
-				cout << "Beolvasas sikeres.\n";
-			else {
-				cout << "Beolvasas sikertelen, hibas bemeneti adatok.\n";
-				kl->~KLista();
-			}
-		}
 		else
 			cout << "Nincs ilyen valasztasi lehetoseg.\n";
 		break;
 	}
 
-	case 3: {
+	case 2: {
 		string ind;
 		int n;
 
-		cout << "Hanyadik modul adatait szeretne megtekinteni?\n";
-		cin >> ind;
-		if (kl->isNumeric(ind)) {
-			n = stoi(ind);
-			if (n >= 0)
-				kl->kiirCsomopont(n);
+		if (kl.ures())
+			cout << "Az urhajo nem tartalmaz modulokat.\n";
+		else {
+			cout << "Hanyadik modul adatait szeretne megtekinteni?\n";
+			cin >> ind;
+			if (isNumeric(ind)) {
+				n = stoi(ind);
+				if (n < 1 || n > kl.teritHossz())
+					cout << "Kiiras sikertelen, hibas bemeneti adat.\n";
+				else
+					kl.kiirCsomopont(n);
+			}
 			else
 				cout << "Kiiras sikertelen, hibas bemeneti adat.\n";
 		}
+		break;
+	}
+
+	case 3: {
+		if (kl.ures())
+			cout << "Az urhajo nem tartalmaz modulokat.\n";
 		else
-			cout << "Kiiras sikertelen, hibas bemeneti adat.\n";
+			kl.kiir();
 		break;
 	}
 
 	case 4: {
-		if (kl->ures())
-			cout << "Az urallomas nem tartalmaz modulokat.\n";
-		else
-			kl->kiir();
+		cout << "Az urallomas jelenleg " << kl.teritHossz() << " modulbol all.\n";
 		break;
 	}
 
 	case 5: {
-		if (kl->ures())
-			cout << "Az urallomas nem tartalmaz modulokat.\n";
-		else
-			cout << "Az urallomas tartalmaz modulokat.\n";
-		break;
-	}
-
-	case 6: {
-		if (kl->tele())
-			cout << "Az urallomas maximalis szamu modult tartalmaz.\n";
-		else
-			cout << "Az urallomashoz meg lehet hozzaadni modult.\n";
-		break;
-	}
-
-	case 7: {
-		cout << "Az urallomas jelenleg " << kl->teritHossz() << " darab modulbol all.\n";
-		break;
-	}
-
-	case 8: {
-		if (kl->tele())
-			cout << "Nem lehetseges beszurni, az urallomas mar maximalis szamu modult tartalmaz.\n";
+		if (kl.tele())
+			cout << "Nem lehetseges beszurni, az urhajo mar maximalis szamu modult tartalmaz.\n";
 		else {
-			string s;
-			cout << "Allomanybol vagy billentyuzetrol szeretne beszurni? (allomany/billentyuzet)\n";
-			cin >> s;
-			if (s == "allomany")
-				if (!f.eof()) {
-					if (kl->ujCspontBeszurFilebol(f))
-						cout << "Sikeresen hozzaadtuk az uj modult az urallomashoz.\n";
-					else
-						cout << "Beszuras sikertelen, hibas bemeneti adatok.\n";
-				}
-				else
-					cout << "Beszuras sikertelen, az allomanyban nincs tobb adat.\n";
-			else if (s == "billentyuzet") {
-				if (kl->ujCspontBeszurBillentyuzetrol())
-					cout << "Sikeresen hozzaadtuk az uj modult az urallomashoz.\n";
-				else
-					cout << "Beszuras sikertelen, hibas bemeneti adatok.\n";
-			}
+			if (kl.ujCspontBeszurBillentyuzetrol())
+				cout << "Sikeresen hozzaadtuk az uj modult az urallomashoz.\n";
 			else
-				cout << "Nincs ilyen valasztasi lehetoseg.\n";
+				cout << "Beszuras sikertelen, hibas bemeneti adatok.\n";
 		}
 		break;
 	}
 
-	case 9: {
-		if (kl->ures())
+	case 6: {
+		if (kl.ures())
 			cout << "Nem lehetseges torolni, az urallomas nem tartalmaz modulokat.\n";
 		else {
-			int ind;
-			string num;
+			string ind;
+			int n;
 
 			cout << "Hanyadik modult szeretne eltavolitani az urallomasbol?\n";
-			cin >> num;
+			cin >> ind;
 
-			if (kl->isNumeric(num)) {
-				ind = stoi(num);
-				if (ind >= 1) {
-					kl->torol(kl->teritAdottIndexnel(ind));
+			if (isNumeric(ind)) {
+				n = stoi(ind);
+				if (n > 0 && n <= kl.teritHossz()) {
+					kl.torol(kl.teritAdottIndexnel(n));
 					cout << "Modul sikeresen eltavolitva.\n";
 				}
 				else
@@ -157,13 +118,53 @@ void valaszt(int v) {
 		break;
 	}
 
+	case 7: {
+		if (kl.ujSzemely())
+			cout << "Beolvasas sikeres.\n";
+		else
+			cout << "Beolvasas sikertelen, hibas bemeneti adatok.\n";
+		break;
+	}
+
+	case 8: {
+		if (kl.ures())
+			cout << "Nem lehetseges torolni, az urallomas nem tartalmaz modulokat.\n";
+		else {
+			string ind;
+			int n;
+
+			cout << "Hanyadik modulban talalhato a szemely?\n";
+			cin >> ind;
+
+			if (isNumeric(ind)) {
+				n = stoi(ind);
+				if (n > 0 && n <= kl.teritHossz()) {
+					if (kl.torolSzemely(n))
+						cout << "Torles sikeres.\n";
+					else
+						cout << "A megadott szemely nem szerepel a modul nyilvantartasaban.\n";
+				}
+				else
+					cout << "A megadott index helytelen.\n";
+			}
+			else
+				cout << "A megadott index helytelen.\n";
+		}
+		break;
+	}
+
+	case 9: {
+		kl.evEltelik();
+		cout << "Mindenkinek az eletkora sikeresen frissitve\n";
+		break;
+	}
+
 	default: {
 		cout << "Nincs ilyen sorszamu muvelet, kerem valasszon a felsoroltak kozul.\n";
 		break;
 	}
 	}
 }
-
 
 int main() {
 	int v;
@@ -174,9 +175,7 @@ int main() {
 		valaszt(v);
 	} while (v != 0);
 
-	if (kl != 0)
-		delete kl;
-
 	f.close();
+	g.close();
 	return 0;
 }

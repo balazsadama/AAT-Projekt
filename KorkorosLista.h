@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <fstream>
+#include <stdlib.h>
 #include <string>
 #include <map>
 using namespace std;
@@ -9,16 +10,16 @@ using namespace std;
 
 struct Csomopont {
 	int lakos_sz;
-	map<string, int> lakosok;
+	map<pair<string, string>, int> lakosok;	// foglalkozas, nev, kor
 	Csomopont* next;
 };
 
 class KLista {
 private:
+	int modulok_sz;
 	Csomopont *fej;
 public:
-	KLista();		// itt hagyom h ha elfelejt a felhasznalo init-elni, megis mukodjon a program
-	void init();
+	KLista();
 	~KLista();
 	int teritHossz();
 	bool ures();
@@ -36,71 +37,33 @@ public:
 	void kiirCsomopont(int);
 	Csomopont* ujCspontOlvasFilebol(ifstream&);
 	int ujCspontBeszurFilebol(ifstream&);
-	bool isNumeric(string str);
+	int olvas(ifstream&, bool);
+	Csomopont* ujCspontOlvas(ifstream&, bool);
+	void evEltelik();
+	int ujSzemely();
+	int torolSzemely(int);
 };
 
 KLista::KLista() {
 	// megfelel az Init() fuggvenynek, letrehoz egy ures Korkoros Listat
 
+	modulok_sz = 0;
 	fej = 0;
 }
 
-void KLista::init() {
-	// kezdoertekkent
-	fej = 0;
-}
-
+// mukszik
 void KLista::kiir() {
 	Csomopont *p;
 	int count = 1;
 
 	p = fej;
-	if (fej != 0) {
-		cout << endl << "Az urallomast a kovetkezo modul(ok) alkotja(k):\n";
-		do {
-			cout << count++ << ".modul-> ";
-			cout << p->lakos_sz << " lakos: ";
-			for (map<string, int>::iterator it = p->lakosok.begin(); it != p->lakosok.end(); it++)
-				cout << it->first << ": " << it->second << '\t';
-			cout << endl;
-			p = p->next;
-		} while (p != fej);
-		cout << endl;
-	}
-}
-
-int KLista::teritHossz() {
-	// visszateriti, hogy hany csomopontot tartalmaz a lista
-
-	int count = 0;
-	Csomopont *it;
-
-	if (fej != 0) {
-		count++;
-		it = fej->next;
-		while (it != fej) {
-			count++;
-			it = it->next;
-		}
-	}
-
-	return count;
-}
-
-bool KLista::ures() {
-	// ha egyetlen csomopontot sem tartalmaz a lista, akkor igaz erteket terit vissza
-
-	if (teritHossz() == 0)
-		return true;
-	return false;
-}
-
-bool KLista::tele() {
-	// ha MAX_CSOMOPONT szamu csomopontbol all a lista, akkor igaz erteket terit vissza
-
-	if (teritHossz() == MAX_CSOMOPONT)
-		return true;
-	return false;
+	cout << endl << "Az urallomast a kovetkezo modul(ok) alkotja(k):\n";
+	if (p != 0) do {
+		cout << count << ".modul-> ";
+		kiirCsomopont(count++);
+		p = p->next;
+	} while (p != fej);
+	cout << endl;
 }
 
 KLista::~KLista() {
@@ -118,6 +81,214 @@ KLista::~KLista() {
 	}
 }
 
+bool isNumeric(string str) {
+
+	if (str[0] < '0' || str[0] > '9')
+		if (str[0] != '-')
+			return false;
+	for (unsigned int i = 1; i < str.length(); i++)
+		if (str[i] < '0' || str[i] > '9')
+			return false;
+	return true;
+}
+
+// mukszik
+void KLista::beszurUtan(Csomopont *p, Csomopont *uj) {
+	uj->next = p->next;
+	p->next = uj;
+}
+
+// mukszik
+void KLista::beszurEle(Csomopont *p, Csomopont *uj) {
+	Csomopont *q = new Csomopont;
+
+	q->lakosok = p->lakosok;
+	q->lakos_sz = p->lakos_sz;
+	q->next = p->next;
+
+	p->lakosok = uj->lakosok;
+	p->lakos_sz = uj->lakos_sz;
+	p->next = q;
+	delete uj;
+
+	// ha a fej ele kell beszurni, akkor a fej mutatot aktualizaljuk, mert folulirtuk az eredeti
+	// poziciojan az adatokat
+	if (p == fej)
+		fej = q;
+}
+
+// mukszik, de nem kell
+int KLista::olvasFilebol(ifstream& f) {
+	int n;
+	string foglalkozas, num, nev, kor;
+	Csomopont *temp, *prev;
+
+	prev = 0;
+	f >> num;
+	if (isNumeric(num))
+		n = stoi(num);	// beolvasando modulok szama
+	else
+		return (0);
+
+	if (n < 0 || n > MAX_CSOMOPONT)
+		return 0;
+
+	modulok_sz = n;
+	do {
+		temp = ujCspontOlvasFilebol(f);
+
+		if (temp == 0)
+			return 0;
+
+		if (fej == 0) {
+			fej = temp;
+		}
+		else if (prev != 0) {
+			prev->next = temp;
+		}
+		prev = temp;
+		temp->next = fej;
+		n--;
+	} while (n != 0);
+
+	return 1;
+}
+
+// mukszik, de nem kell
+int KLista::olvasBillenytuzetrol() {
+	// 
+	int n;
+	Csomopont *temp, *prev;
+	string foglalkozas, num, nev, kor;
+
+	cout << "Hany modulbol fog allni az urallomas?\n";
+	cin >> num;
+	if (isNumeric(num))
+		n = stoi(num);
+	else
+		return (0);
+
+	if (n < 0 || n > MAX_CSOMOPONT)
+		return 0;
+
+	modulok_sz = n;
+	prev = fej;
+	for (int i = 0; i < n; i++) {
+		
+		temp = ujCspontOlvasBillentyuzetrol();
+		if (temp == 0)
+			return 0;
+
+		if (fej == 0) {
+			fej = temp;
+			temp->next = fej;
+		}
+		else
+			beszurUtan(prev, temp);
+		prev = temp;
+	}
+
+	return 1;
+}
+
+// mukszik
+Csomopont* KLista::ujCspontOlvasBillentyuzetrol() {
+	Csomopont *temp;
+	string foglalkozas, num, nev, kor;
+	int m;
+
+	temp = new Csomopont;
+	cout << "Hany lakos?\n";
+	cin >> num;
+	if (isNumeric(num))
+		m = stoi(num);
+	else {
+		delete temp;
+		return (0);
+	}
+
+	if (m < 0) {
+		delete temp;
+		return 0;
+	}
+
+	temp->lakos_sz = m;
+	cout << "Adja meg mindeniknek a foglalkozasat, nevet es eletkorat (fontos a sorrend):\n";
+	for (int j = 0; j < m; j++) {
+		cin >> foglalkozas >> nev >> kor;
+		if (!isNumeric(kor)) {
+			delete temp;
+			return 0;
+		}
+		if (temp->lakosok.find(pair<string, string>(foglalkozas, nev)) == temp->lakosok.end())
+			temp->lakosok.insert(pair<pair<string, string>, int>(pair<string, string>(foglalkozas, nev), stoi(kor)));
+		else {
+			delete temp;
+			return 0;
+		}
+	}
+
+	return temp;
+}
+
+// mukszik, de szerintem ezt ki kell torolni
+Csomopont* KLista::ujCspontOlvasFilebol(ifstream& f) {
+	Csomopont *temp;
+	string foglalkozas, num, nev, kor;
+
+	temp = new Csomopont;
+	f >> num;
+	if (isNumeric(num))
+		temp->lakos_sz = stoi(num);
+	else {
+		delete[] temp;
+		return 0;
+	}
+
+	if (temp->lakos_sz < 0) {
+		delete temp;
+		return 0;
+	}
+
+	for (int i = 0; i < temp->lakos_sz; i++) {
+		f >> foglalkozas >> nev >> kor;
+		if (!isNumeric(kor))	// hibas bemeneti adat
+			return 0;
+		if (temp->lakosok.find(pair<string, string>(foglalkozas, nev)) == temp->lakosok.end())
+			temp->lakosok.insert(pair<pair<string, string>, int>(pair<string, string>(foglalkozas, nev), stoi(kor)));
+		else {
+			delete temp;
+			return 0;	// nem lehet ket ember akinek ugyanaz a foglalkozasa es neve
+		}
+	}
+
+	return temp;
+}
+
+// mukszik
+int KLista::teritHossz() {
+	return modulok_sz;
+}
+
+// mukszik
+bool KLista::ures() {
+	// ha egyetlen csomopontot sem tartalmaz a lista, akkor igaz erteket terit vissza
+
+	if (modulok_sz == 0)
+		return true;
+	return false;
+}
+
+// mukszik
+bool KLista::tele() {
+	// ha MAX_CSOMOPONT szamu csomopontbol all a lista, akkor igaz erteket terit vissza
+
+	if (modulok_sz == MAX_CSOMOPONT)
+		return true;
+	return false;
+}
+
+// mukszik
 void KLista::torol(Csomopont *p) {
 	Csomopont *q;
 
@@ -138,170 +309,18 @@ void KLista::torol(Csomopont *p) {
 	}
 }
 
-void KLista::beszurEle(Csomopont *p, Csomopont *uj) {
-	Csomopont *q = new Csomopont;
+// mukszik
+Csomopont* KLista::teritAdottIndexnel(int i) {
+	// terit egy mutatot az (1-tol indexelve) i-edik elemre
+	Csomopont* it;
 
-	q->lakosok = p->lakosok;
-	q->lakos_sz = p->lakos_sz;
-	q->next = p->next;
-
-	p->lakosok = uj->lakosok;
-	p->lakos_sz = uj->lakos_sz;
-	p->next = q;
-	delete uj;
-
-	// ha a fej ele kell beszurni, akkor a fej mutatot aktualizaljuk, mert folulirtuk az eredeti
-	// poziciojan az adatokat
-	if (p == fej)
-		fej = q;
+	it = fej;
+	for (int k = 1; k < i; k++)
+		it = it->next;
+	return it;
 }
 
-void KLista::beszurUtan(Csomopont *p, Csomopont *uj) {
-	uj->next = p->next;
-	p->next = uj;
-}
-
-int KLista::olvasBillenytuzetrol() {
-	// parameterkent kap egy helyes csomopontszamot, hibakezeles mas alprogramban
-	int m, n;
-	Csomopont *temp, *prev;
-	string foglalkozas, num;
-
-	cout << "Hany modulbol fog allni az urallomas?\n";
-	cin >> num;
-	if (isNumeric(num))
-		n = stoi(num);
-	else
-		return (0);
-
-	if (n < 0 || n > MAX_CSOMOPONT)
-		return 0;
-
-	prev = fej;
-	for (int i = 0; i < n; i++) {
-		temp = new Csomopont;
-		cout << "Hany lakos?\n";
-		cin >> num;
-		if (isNumeric(num))
-			m = stoi(num);
-		else {
-			delete temp;
-			return (0);
-		}
-
-		if (m < 0) {
-			delete temp;
-			return 0;
-		}
-
-		temp->lakos_sz = m;
-		cout << "Kerem adja meg mindeniknek a foglalkozasat:\n";
-		for (int j = 0; j < m; j++) {
-			cin >> foglalkozas;
-			if (temp->lakosok.find(foglalkozas) == temp->lakosok.end())	// ha nincs meg ilyen foglalkozas
-				temp->lakosok.insert(pair<string, int>(foglalkozas, 1));
-			else
-				temp->lakosok[foglalkozas]++;
-		}
-
-		if (fej == 0) {
-			fej = temp;
-			temp->next = fej;
-		}
-		else
-			beszurUtan(prev, temp);
-		prev = temp;
-	}
-
-	return 1;
-}
-
-int KLista::olvasFilebol(ifstream& f) {
-	int n;
-	string foglalkozas, num;
-	Csomopont *temp, *prev;
-
-	prev = 0;
-	f >> num;
-	if (isNumeric(num))
-		n = stoi(num);
-	else
-		return (0);
-
-	if (n < 0 || n > MAX_CSOMOPONT)
-		return 0;
-
-	do {
-		temp = new Csomopont;
-		f >> num;
-		if (isNumeric(num))
-			temp->lakos_sz = stoi(num);
-		else {
-			delete[] temp;
-			return 0;
-		}
-
-		if (temp->lakos_sz < 0) {
-			delete temp;
-			return 0;
-		}
-
-		for (int i = 0; i < temp->lakos_sz; i++) {
-			f >> foglalkozas;
-			if (temp->lakosok.find(foglalkozas) == temp->lakosok.end())	//nincs meg ilyen foglalkozas
-				temp->lakosok.insert(pair<string, int>(foglalkozas, 1));
-			else
-				temp->lakosok[foglalkozas]++;
-		}
-
-		if (fej == 0) {
-			fej = temp;
-		}
-		else if (prev != 0) {
-			prev->next = temp;
-		}
-		prev = temp;
-		temp->next = fej;
-		n--;
-	} while (n != 0);
-
-	return 1;
-}
-
-Csomopont* KLista::ujCspontOlvasBillentyuzetrol() {
-	Csomopont *temp;
-	string foglalkozas, num;
-	int m;
-
-	temp = new Csomopont;
-	cout << "Hany lakos?\n";
-	cin >> num;
-
-	if (isNumeric(num)) {
-		m = stoi(num);
-		if (m < 0) {
-			delete temp;
-			return 0;
-		}
-	}
-	else {
-		delete temp;
-		return 0;
-	}
-
-	temp->lakos_sz = m;
-	cout << "Kerem adja meg mindeniknek a foglalkozasat:\n";
-	for (int j = 0; j < m; j++) {
-		cin >> foglalkozas;
-		if (temp->lakosok.find(foglalkozas) == temp->lakosok.end())	//nincs meg ilyen foglalkozas
-			temp->lakosok.insert(pair<string, int>(foglalkozas, 1));
-		else
-			temp->lakosok[foglalkozas]++;
-	}
-
-	return temp;
-}
-
+// mukszik
 int KLista::ujCspontBeszurBillentyuzetrol() {
 	Csomopont *uj, *hova;
 	string valaszt, num;
@@ -311,6 +330,13 @@ int KLista::ujCspontBeszurBillentyuzetrol() {
 
 	if (uj == 0)
 		return 0;
+
+	if (fej == 0) {
+		fej = uj;
+		uj->next = fej;
+		modulok_sz++;
+		return 1;
+	}
 
 	cout << "Csomopont ele, vagy csomopont utan szurjuk? (ele / utan)\n";
 	cin >> valaszt;
@@ -330,64 +356,20 @@ int KLista::ujCspontBeszurBillentyuzetrol() {
 		return 0;
 
 	hova = teritAdottIndexnel(ind);
-	if (valaszt == "ele")
+	if (valaszt == "ele") {
 		beszurEle(hova, uj);
-	else if (valaszt == "utan")
+		modulok_sz++;
+	}
+	else if (valaszt == "utan") {
 		beszurUtan(hova, uj);
+		modulok_sz++;
+	}
 	else
 		return 0;
+	return 1;
 }
 
-Csomopont* KLista::teritAdottIndexnel(int i) {
-	// terit egy mutatot az (1-tol indexelve) i-edik elemre
-	Csomopont* it;
-	int n;
-
-	n = teritHossz();
-	it = fej;
-	for (int k = 0; k < (i - 1) % n; k++)
-		it = it->next;
-	return it;
-}
-
-void KLista::kiirCsomopont(int ind) {
-	Csomopont* cs = teritAdottIndexnel(ind);
-
-	cout << cs->lakos_sz << " lakos: ";
-	for (map<string, int>::iterator it = cs->lakosok.begin(); it != cs->lakosok.end(); it++)
-		cout << it->first << ": " << it->second << '\t';
-	cout << endl;
-}
-
-Csomopont* KLista::ujCspontOlvasFilebol(ifstream& f) {
-	Csomopont *temp;
-	string foglalkozas, num;
-
-	temp = new Csomopont;
-	f >> num;
-	if (isNumeric(num))
-		temp->lakos_sz = stoi(num);
-	else {
-		delete temp;
-		return 0;
-	}
-
-	if (temp->lakos_sz < 0) {
-		delete temp;
-		return 0;
-	}
-	
-	for (int j = 0; j < temp->lakos_sz; j++) {
-		f >> foglalkozas;
-		if (temp->lakosok.find(foglalkozas) == temp->lakosok.end())	//nincs meg ilyen foglalkozas
-			temp->lakosok.insert(pair<string, int>(foglalkozas, 1));
-		else
-			temp->lakosok[foglalkozas]++;
-	}
-
-	return temp;
-}
-
+// mukszik, de ez nem hiszem h kell ide
 int KLista::ujCspontBeszurFilebol(ifstream& f) {
 	Csomopont *uj, *hova;
 	string valaszt, ind;
@@ -400,7 +382,7 @@ int KLista::ujCspontBeszurFilebol(ifstream& f) {
 
 	f >> valaszt;
 
-	if (valaszt != "ele" && valaszt != "utan")	/* this is new */
+	if (valaszt != "ele" && valaszt != "utan")
 		return 0;
 
 	f >> ind;
@@ -423,13 +405,144 @@ int KLista::ujCspontBeszurFilebol(ifstream& f) {
 	return 1;
 }
 
-bool KLista::isNumeric(string str) {
-	
-	if (str[0] < '0' || str[0] > '9')
-		if (str[0] != '-')
-			return false;
-	for (unsigned int i = 1; i < str.length(); i++)
-		if (str[i] < '0' || str[i] > '9')
-			return false;
-	return true;
+// mukszik
+void KLista::kiirCsomopont(int ind) {
+	Csomopont* p = teritAdottIndexnel(ind);
+
+	cout << p->lakos_sz << " lakos: ";
+	for (map<pair<string, string>, int >::iterator it = p->lakosok.begin(); it != p->lakosok.end(); it++)
+		cout << it->first.first << ": " << it->first.second << ' ' << it->second << '\t';
+	cout << endl;
+}
+
+Csomopont* KLista::ujCspontOlvas(ifstream& f, bool billentyuzetrol) {
+	Csomopont *temp;
+	string foglalkozas, num, nev, kor;
+	int m;
+
+	temp = new Csomopont;
+	if (billentyuzetrol)
+		cout << "Hany lakos?\n";
+	f >> num;
+	if (isNumeric(num))
+		m = stoi(num);
+	else {
+		delete temp;
+		return (0);
+	}
+
+	if (m < 0) {
+		delete temp;
+		return 0;
+	}
+
+	temp->lakos_sz = m;
+	if (billentyuzetrol)
+		cout << "Adja meg mindeniknek a foglalkozasat, nevet es eletkorat (fontos a sorrend):\n";
+	for (int j = 0; j < m; j++) {
+		f >> foglalkozas >> nev >> kor;
+		if (!isNumeric(kor)) {
+			delete temp;
+			return 0;
+		}
+		if (temp->lakosok.find(pair<string, string>(foglalkozas, nev)) == temp->lakosok.end())
+			temp->lakosok.insert(pair<pair<string, string>, int>(pair<string, string>(foglalkozas, nev), stoi(kor)));
+		else {
+			delete temp;
+			return 0;
+		}
+	}
+
+	return temp;
+}
+
+int KLista::olvas(ifstream& f, bool billentyuzetrol) {
+	int n;
+	Csomopont *temp, *prev;
+	string foglalkozas, num, nev, kor;
+
+	if (billentyuzetrol)
+		cout << "Hany modulbol fog allni az urallomas?\n";
+	f >> num;
+	if (isNumeric(num))
+		n = stoi(num);
+	else
+		return (0);
+
+	if (n < 0 || n > MAX_CSOMOPONT)
+		return 0;
+
+	modulok_sz = n;
+	prev = fej;
+	for (int i = 0; i < n; i++) {
+
+		temp = ujCspontOlvas(f, billentyuzetrol);
+		if (temp == 0)
+			return 0;
+
+		if (fej == 0) {
+			fej = temp;
+			temp->next = fej;
+		}
+		else
+			beszurUtan(prev, temp);
+		prev = temp;
+	}
+
+	return 1;
+}
+
+void KLista::evEltelik(){
+	Csomopont* p = fej;
+
+	if (p != 0) do {
+		for (map<pair<string, string>, int>::iterator it = p->lakosok.begin(); it != p->lakosok.end(); ++it)
+			it->second++;
+		p = p->next;
+	} while (p != fej);
+}
+
+int KLista::ujSzemely() {
+	Csomopont* p;
+	string foglalkozas, nev, num;
+	int m;
+
+	cout << "Mi lesz a foglalkozasa?\n";
+	cin >> foglalkozas;
+	cout << "Mi lesz a neve?\n";
+	cin >> nev;
+	cout << "Hanyas modulban fog elni?\n";
+	cin >> num;
+
+	if (!isNumeric(num))
+		return 0;
+	m = stoi(num);
+	if (m < 1 || m > modulok_sz)
+		return 0;
+
+	p = teritAdottIndexnel(m);
+	while (p->lakosok.find(pair<string, string>(foglalkozas, nev)) != p->lakosok.end()) {
+		cout << "Ilyen nevu es foglalkozasu szemely mar letezik ebben a modulban, kerem adjon meg mas nevet:\n";
+		cin >> nev;
+	}
+
+	p->lakosok.insert(pair<pair<string, string>, int>(pair<string, string>(foglalkozas, nev), 0));
+	return 1;
+}
+
+int KLista::torolSzemely(int ind) {
+	Csomopont *p = teritAdottIndexnel(ind);
+	string foglalkozas, nev;
+
+	cout << "Mi a foglalkozasa?\n";
+	cin >> foglalkozas;
+	cout << "Mi a neve?\n";
+	cin >> nev;
+
+	if (p->lakosok.find(pair<string, string>(foglalkozas, nev)) != p->lakosok.end()) {
+		p->lakosok.erase(pair<string, string>(foglalkozas, nev));
+		return 1;
+	}
+	else
+		return 0;
 }
