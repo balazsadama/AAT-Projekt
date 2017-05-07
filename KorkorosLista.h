@@ -26,19 +26,14 @@ public:
 	bool tele();
 	void kiir();
 	void torol(Modul *p);
-	//Modul* teritFej() { return fej; }	// tesztelni, hogy a main-bol tudjunk
 	void beszurEle(Modul *p, Modul *uj);
 	void beszurUtan(Modul *p, Modul *uj);
-	//int olvasBillenytuzetrol();
-	//int olvasFilebol(ifstream&);
 
 	Modul* ujCspontOlvasBillentyuzetrol();
 	int ujCspontBeszurBillentyuzetrol();
 
 	Modul* teritAdottIndexnel(int);
 	void kiirModul(int);
-	//Modul* ujCspontOlvasFilebol(ifstream&);
-	//int ujCspontBeszurFilebol(ifstream&);
 	
 	int olvas(ifstream&, bool);
 	Modul* ujCspontOlvas(ifstream&, bool);
@@ -121,80 +116,6 @@ void KLista::beszurEle(Modul *p, Modul *uj) {
 		fej = q;
 }
 
-// mukszik, de nem kell
-/*int KLista::olvasFilebol(ifstream& f) {
-	int n;
-	string foglalkozas, num, nev, kor;
-	Modul *temp, *prev;
-
-	prev = 0;
-	f >> num;
-	if (isNumeric(num))
-		n = stoi(num);	// beolvasando modulok szama
-	else
-		return (0);
-
-	if (n < 0 || n > MAX_Modul)
-		return 0;
-
-	modulok_sz = n;
-	do {
-		temp = ujCspontOlvasFilebol(f);
-
-		if (temp == 0)
-			return 0;
-
-		if (fej == 0) {
-			fej = temp;
-		}
-		else if (prev != 0) {
-			prev->next = temp;
-		}
-		prev = temp;
-		temp->next = fej;
-		n--;
-	} while (n != 0);
-
-	return 1;
-}*/
-
-// mukszik, de nem kell
-/*int KLista::olvasBillenytuzetrol() {
-	// 
-	int n;
-	Modul *temp, *prev;
-	string foglalkozas, num, nev, kor;
-
-	cout << "Hany modulbol fog allni az urallomas?\n";
-	cin >> num;
-	if (isNumeric(num))
-		n = stoi(num);
-	else
-		return (0);
-
-	if (n < 0 || n > MAX_Modul)
-		return 0;
-
-	modulok_sz = n;
-	prev = fej;
-	for (int i = 0; i < n; i++) {
-		
-		temp = ujCspontOlvasBillentyuzetrol();
-		if (temp == 0)
-			return 0;
-
-		if (fej == 0) {
-			fej = temp;
-			temp->next = fej;
-		}
-		else
-			beszurUtan(prev, temp);
-		prev = temp;
-	}
-
-	return 1;
-}*/
-
 // mukszik
 Modul* KLista::ujCspontOlvasBillentyuzetrol() {
 	Modul *temp;
@@ -235,39 +156,6 @@ Modul* KLista::ujCspontOlvasBillentyuzetrol() {
 	return temp;
 }
 
-// mukszik, de szerintem ezt ki kell torolni
-/*Modul* KLista::ujCspontOlvasFilebol(ifstream& f) {
-	Modul *temp;
-	string foglalkozas, num, nev, kor;
-
-	temp = new Modul;
-	f >> num;
-	if (isNumeric(num))
-		temp->lakos_sz = stoi(num);
-	else {
-		delete[] temp;
-		return 0;
-	}
-
-	if (temp->lakos_sz < 0) {
-		delete temp;
-		return 0;
-	}
-
-	for (int i = 0; i < temp->lakos_sz; i++) {
-		f >> foglalkozas >> nev >> kor;
-		if (!isNumeric(kor))	// hibas bemeneti adat
-			return 0;
-		if (temp->lakosok.find(pair<string, string>(foglalkozas, nev)) == temp->lakosok.end())
-			temp->lakosok.insert(pair<pair<string, string>, int>(pair<string, string>(foglalkozas, nev), stoi(kor)));
-		else {
-			delete temp;
-			return 0;	// nem lehet ket ember akinek ugyanaz a foglalkozasa es neve
-		}
-	}
-
-	return temp;
-}*/
 
 // mukszik
 int KLista::teritHossz() {
@@ -372,42 +260,6 @@ int KLista::ujCspontBeszurBillentyuzetrol() {
 		return 0;
 	return 1;
 }
-
-// mukszik, de ez nem hiszem h kell ide
-/*int KLista::ujCspontBeszurFilebol(ifstream& f) {
-	Modul *uj, *hova;
-	string valaszt, ind;
-	int m;
-
-	uj = ujCspontOlvasFilebol(f);
-
-	if (uj == 0)		// ha sikertelen volt a beolvasas, sikertelen lesz a beszuras is
-		return 0;
-
-	f >> valaszt;
-
-	if (valaszt != "ele" && valaszt != "utan")
-		return 0;
-
-	f >> ind;
-
-	if (isNumeric(ind)) {
-		m = stoi(ind);
-		if (m <= 0)
-			return 0;
-	}
-	else
-		return 0;
-
-	hova = teritAdottIndexnel(m);
-	if (valaszt == "ele")
-		beszurEle(hova, uj);
-	else if (valaszt == "utan")
-		beszurUtan(hova, uj);
-	else
-		return 0;
-	return 1;
-}*/
 
 // mukszik
 void KLista::kiirModul(int ind) {
