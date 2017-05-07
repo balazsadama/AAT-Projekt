@@ -236,7 +236,7 @@ int KLista::ujModulBeszurBillentyuzetrol() {
 	if (valaszt != "ele" && valaszt != "utan")
 		return 0;
 
-	cout << "Hanyadik elem " << valaszt << " szeretne beszurni?\n";
+	cout << "Hanyadik modul " << valaszt << " szeretne beszurni?\n";
 	cin >> num;
 
 	if (isNumeric(num)) {
