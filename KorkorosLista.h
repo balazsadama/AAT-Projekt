@@ -189,6 +189,7 @@ void KLista::torol(Modul *p) {
 	else if (teritHossz() == 1) {
 		delete fej;
 		fej = 0;
+		modulok_sz = 0;
 	}
 	else {
 		if (p->next == fej)
@@ -198,6 +199,7 @@ void KLista::torol(Modul *p) {
 		p->lakosok = q->lakosok;
 		p->next = q->next;
 		delete q;
+		modulok_sz--;
 	}
 }
 
@@ -316,6 +318,9 @@ int KLista::olvas(ifstream& f, bool billentyuzetrol) {
 	int n;
 	Modul *temp, *prev;
 	string foglalkozas, num, nev, kor;
+
+	if (f.eof())
+		return 0;
 
 	if (billentyuzetrol)
 		cout << "Hany modulbol fog allni az urallomas?\n";
