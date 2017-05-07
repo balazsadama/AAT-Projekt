@@ -26,19 +26,23 @@ public:
 	bool tele();
 	void kiir();
 	void torol(Modul *p);
-	Modul* teritFej() { return fej; }	// tesztelni, hogy a main-bol tudjunk
+	//Modul* teritFej() { return fej; }	// tesztelni, hogy a main-bol tudjunk
 	void beszurEle(Modul *p, Modul *uj);
 	void beszurUtan(Modul *p, Modul *uj);
-	int olvasBillenytuzetrol();
-	int olvasFilebol(ifstream&);
+	//int olvasBillenytuzetrol();
+	//int olvasFilebol(ifstream&);
+
 	Modul* ujCspontOlvasBillentyuzetrol();
 	int ujCspontBeszurBillentyuzetrol();
+
 	Modul* teritAdottIndexnel(int);
 	void kiirModul(int);
-	Modul* ujCspontOlvasFilebol(ifstream&);
-	int ujCspontBeszurFilebol(ifstream&);
+	//Modul* ujCspontOlvasFilebol(ifstream&);
+	//int ujCspontBeszurFilebol(ifstream&);
+	
 	int olvas(ifstream&, bool);
 	Modul* ujCspontOlvas(ifstream&, bool);
+	
 	void evEltelik();
 	int ujSzemely();
 	int torolSzemely(int);
@@ -118,7 +122,7 @@ void KLista::beszurEle(Modul *p, Modul *uj) {
 }
 
 // mukszik, de nem kell
-int KLista::olvasFilebol(ifstream& f) {
+/*int KLista::olvasFilebol(ifstream& f) {
 	int n;
 	string foglalkozas, num, nev, kor;
 	Modul *temp, *prev;
@@ -152,10 +156,10 @@ int KLista::olvasFilebol(ifstream& f) {
 	} while (n != 0);
 
 	return 1;
-}
+}*/
 
 // mukszik, de nem kell
-int KLista::olvasBillenytuzetrol() {
+/*int KLista::olvasBillenytuzetrol() {
 	// 
 	int n;
 	Modul *temp, *prev;
@@ -189,7 +193,7 @@ int KLista::olvasBillenytuzetrol() {
 	}
 
 	return 1;
-}
+}*/
 
 // mukszik
 Modul* KLista::ujCspontOlvasBillentyuzetrol() {
@@ -232,7 +236,7 @@ Modul* KLista::ujCspontOlvasBillentyuzetrol() {
 }
 
 // mukszik, de szerintem ezt ki kell torolni
-Modul* KLista::ujCspontOlvasFilebol(ifstream& f) {
+/*Modul* KLista::ujCspontOlvasFilebol(ifstream& f) {
 	Modul *temp;
 	string foglalkozas, num, nev, kor;
 
@@ -263,7 +267,7 @@ Modul* KLista::ujCspontOlvasFilebol(ifstream& f) {
 	}
 
 	return temp;
-}
+}*/
 
 // mukszik
 int KLista::teritHossz() {
@@ -370,7 +374,7 @@ int KLista::ujCspontBeszurBillentyuzetrol() {
 }
 
 // mukszik, de ez nem hiszem h kell ide
-int KLista::ujCspontBeszurFilebol(ifstream& f) {
+/*int KLista::ujCspontBeszurFilebol(ifstream& f) {
 	Modul *uj, *hova;
 	string valaszt, ind;
 	int m;
@@ -403,7 +407,7 @@ int KLista::ujCspontBeszurFilebol(ifstream& f) {
 	else
 		return 0;
 	return 1;
-}
+}*/
 
 // mukszik
 void KLista::kiirModul(int ind) {
@@ -527,6 +531,7 @@ int KLista::ujSzemely() {
 	}
 
 	p->lakosok.insert(pair<pair<string, string>, int>(pair<string, string>(foglalkozas, nev), 0));
+	p->lakos_sz++;
 	return 1;
 }
 
@@ -541,6 +546,7 @@ int KLista::torolSzemely(int ind) {
 
 	if (p->lakosok.find(pair<string, string>(foglalkozas, nev)) != p->lakosok.end()) {
 		p->lakosok.erase(pair<string, string>(foglalkozas, nev));
+		p->lakos_sz--;
 		return 1;
 	}
 	else
