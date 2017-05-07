@@ -6,18 +6,18 @@
 #include <map>
 using namespace std;
 
-#define MAX_CSOMOPONT 6
+#define MAX_Modul 6
 
-struct Csomopont {
+struct Modul {
 	int lakos_sz;
 	map<pair<string, string>, int> lakosok;	// foglalkozas, nev, kor
-	Csomopont* next;
+	Modul* next;
 };
 
 class KLista {
 private:
 	int modulok_sz;
-	Csomopont *fej;
+	Modul *fej;
 public:
 	KLista();
 	~KLista();
@@ -25,20 +25,20 @@ public:
 	bool ures();
 	bool tele();
 	void kiir();
-	void torol(Csomopont *p);
-	Csomopont* teritFej() { return fej; }	// tesztelni, hogy a main-bol tudjunk
-	void beszurEle(Csomopont *p, Csomopont *uj);
-	void beszurUtan(Csomopont *p, Csomopont *uj);
+	void torol(Modul *p);
+	Modul* teritFej() { return fej; }	// tesztelni, hogy a main-bol tudjunk
+	void beszurEle(Modul *p, Modul *uj);
+	void beszurUtan(Modul *p, Modul *uj);
 	int olvasBillenytuzetrol();
 	int olvasFilebol(ifstream&);
-	Csomopont* ujCspontOlvasBillentyuzetrol();
+	Modul* ujCspontOlvasBillentyuzetrol();
 	int ujCspontBeszurBillentyuzetrol();
-	Csomopont* teritAdottIndexnel(int);
-	void kiirCsomopont(int);
-	Csomopont* ujCspontOlvasFilebol(ifstream&);
+	Modul* teritAdottIndexnel(int);
+	void kiirModul(int);
+	Modul* ujCspontOlvasFilebol(ifstream&);
 	int ujCspontBeszurFilebol(ifstream&);
 	int olvas(ifstream&, bool);
-	Csomopont* ujCspontOlvas(ifstream&, bool);
+	Modul* ujCspontOlvas(ifstream&, bool);
 	void evEltelik();
 	int ujSzemely();
 	int torolSzemely(int);
@@ -53,22 +53,22 @@ KLista::KLista() {
 
 // mukszik
 void KLista::kiir() {
-	Csomopont *p;
+	Modul *p;
 	int count = 1;
 
 	p = fej;
 	cout << endl << "Az urallomast a kovetkezo modul(ok) alkotja(k):\n";
 	if (p != 0) do {
 		cout << count << ".modul-> ";
-		kiirCsomopont(count++);
+		kiirModul(count++);
 		p = p->next;
 	} while (p != fej);
 	cout << endl;
 }
 
 KLista::~KLista() {
-	// a program vegen kitorli a csomopontokat, felszabaditja a memoriat
-	Csomopont *to_del, *it;
+	// a program vegen kitorli a Modulokat, felszabaditja a memoriat
+	Modul *to_del, *it;
 
 	if (fej != 0) {
 		it = fej;
@@ -93,14 +93,14 @@ bool isNumeric(string str) {
 }
 
 // mukszik
-void KLista::beszurUtan(Csomopont *p, Csomopont *uj) {
+void KLista::beszurUtan(Modul *p, Modul *uj) {
 	uj->next = p->next;
 	p->next = uj;
 }
 
 // mukszik
-void KLista::beszurEle(Csomopont *p, Csomopont *uj) {
-	Csomopont *q = new Csomopont;
+void KLista::beszurEle(Modul *p, Modul *uj) {
+	Modul *q = new Modul;
 
 	q->lakosok = p->lakosok;
 	q->lakos_sz = p->lakos_sz;
@@ -121,7 +121,7 @@ void KLista::beszurEle(Csomopont *p, Csomopont *uj) {
 int KLista::olvasFilebol(ifstream& f) {
 	int n;
 	string foglalkozas, num, nev, kor;
-	Csomopont *temp, *prev;
+	Modul *temp, *prev;
 
 	prev = 0;
 	f >> num;
@@ -130,7 +130,7 @@ int KLista::olvasFilebol(ifstream& f) {
 	else
 		return (0);
 
-	if (n < 0 || n > MAX_CSOMOPONT)
+	if (n < 0 || n > MAX_Modul)
 		return 0;
 
 	modulok_sz = n;
@@ -158,7 +158,7 @@ int KLista::olvasFilebol(ifstream& f) {
 int KLista::olvasBillenytuzetrol() {
 	// 
 	int n;
-	Csomopont *temp, *prev;
+	Modul *temp, *prev;
 	string foglalkozas, num, nev, kor;
 
 	cout << "Hany modulbol fog allni az urallomas?\n";
@@ -168,7 +168,7 @@ int KLista::olvasBillenytuzetrol() {
 	else
 		return (0);
 
-	if (n < 0 || n > MAX_CSOMOPONT)
+	if (n < 0 || n > MAX_Modul)
 		return 0;
 
 	modulok_sz = n;
@@ -192,12 +192,12 @@ int KLista::olvasBillenytuzetrol() {
 }
 
 // mukszik
-Csomopont* KLista::ujCspontOlvasBillentyuzetrol() {
-	Csomopont *temp;
+Modul* KLista::ujCspontOlvasBillentyuzetrol() {
+	Modul *temp;
 	string foglalkozas, num, nev, kor;
 	int m;
 
-	temp = new Csomopont;
+	temp = new Modul;
 	cout << "Hany lakos?\n";
 	cin >> num;
 	if (isNumeric(num))
@@ -232,11 +232,11 @@ Csomopont* KLista::ujCspontOlvasBillentyuzetrol() {
 }
 
 // mukszik, de szerintem ezt ki kell torolni
-Csomopont* KLista::ujCspontOlvasFilebol(ifstream& f) {
-	Csomopont *temp;
+Modul* KLista::ujCspontOlvasFilebol(ifstream& f) {
+	Modul *temp;
 	string foglalkozas, num, nev, kor;
 
-	temp = new Csomopont;
+	temp = new Modul;
 	f >> num;
 	if (isNumeric(num))
 		temp->lakos_sz = stoi(num);
@@ -272,7 +272,7 @@ int KLista::teritHossz() {
 
 // mukszik
 bool KLista::ures() {
-	// ha egyetlen csomopontot sem tartalmaz a lista, akkor igaz erteket terit vissza
+	// ha egyetlen Modulot sem tartalmaz a lista, akkor igaz erteket terit vissza
 
 	if (modulok_sz == 0)
 		return true;
@@ -281,16 +281,16 @@ bool KLista::ures() {
 
 // mukszik
 bool KLista::tele() {
-	// ha MAX_CSOMOPONT szamu csomopontbol all a lista, akkor igaz erteket terit vissza
+	// ha MAX_Modul szamu Modulbol all a lista, akkor igaz erteket terit vissza
 
-	if (modulok_sz == MAX_CSOMOPONT)
+	if (modulok_sz == MAX_Modul)
 		return true;
 	return false;
 }
 
 // mukszik
-void KLista::torol(Csomopont *p) {
-	Csomopont *q;
+void KLista::torol(Modul *p) {
+	Modul *q;
 
 	if (ures())
 		cout << "A lista ures!\n";
@@ -310,9 +310,9 @@ void KLista::torol(Csomopont *p) {
 }
 
 // mukszik
-Csomopont* KLista::teritAdottIndexnel(int i) {
+Modul* KLista::teritAdottIndexnel(int i) {
 	// terit egy mutatot az (1-tol indexelve) i-edik elemre
-	Csomopont* it;
+	Modul* it;
 
 	it = fej;
 	for (int k = 1; k < i; k++)
@@ -322,7 +322,7 @@ Csomopont* KLista::teritAdottIndexnel(int i) {
 
 // mukszik
 int KLista::ujCspontBeszurBillentyuzetrol() {
-	Csomopont *uj, *hova;
+	Modul *uj, *hova;
 	string valaszt, num;
 	int ind;
 
@@ -338,7 +338,7 @@ int KLista::ujCspontBeszurBillentyuzetrol() {
 		return 1;
 	}
 
-	cout << "Csomopont ele, vagy csomopont utan szurjuk? (ele / utan)\n";
+	cout << "Modul ele, vagy Modul utan szurjuk? (ele / utan)\n";
 	cin >> valaszt;
 
 	if (valaszt != "ele" && valaszt != "utan")
@@ -371,7 +371,7 @@ int KLista::ujCspontBeszurBillentyuzetrol() {
 
 // mukszik, de ez nem hiszem h kell ide
 int KLista::ujCspontBeszurFilebol(ifstream& f) {
-	Csomopont *uj, *hova;
+	Modul *uj, *hova;
 	string valaszt, ind;
 	int m;
 
@@ -406,8 +406,8 @@ int KLista::ujCspontBeszurFilebol(ifstream& f) {
 }
 
 // mukszik
-void KLista::kiirCsomopont(int ind) {
-	Csomopont* p = teritAdottIndexnel(ind);
+void KLista::kiirModul(int ind) {
+	Modul* p = teritAdottIndexnel(ind);
 
 	cout << p->lakos_sz << " lakos: ";
 	for (map<pair<string, string>, int >::iterator it = p->lakosok.begin(); it != p->lakosok.end(); it++)
@@ -415,12 +415,12 @@ void KLista::kiirCsomopont(int ind) {
 	cout << endl;
 }
 
-Csomopont* KLista::ujCspontOlvas(ifstream& f, bool billentyuzetrol) {
-	Csomopont *temp;
+Modul* KLista::ujCspontOlvas(ifstream& f, bool billentyuzetrol) {
+	Modul *temp;
 	string foglalkozas, num, nev, kor;
 	int m;
 
-	temp = new Csomopont;
+	temp = new Modul;
 	if (billentyuzetrol)
 		cout << "Hany lakos?\n";
 	f >> num;
@@ -458,7 +458,7 @@ Csomopont* KLista::ujCspontOlvas(ifstream& f, bool billentyuzetrol) {
 
 int KLista::olvas(ifstream& f, bool billentyuzetrol) {
 	int n;
-	Csomopont *temp, *prev;
+	Modul *temp, *prev;
 	string foglalkozas, num, nev, kor;
 
 	if (billentyuzetrol)
@@ -469,7 +469,7 @@ int KLista::olvas(ifstream& f, bool billentyuzetrol) {
 	else
 		return (0);
 
-	if (n < 0 || n > MAX_CSOMOPONT)
+	if (n < 0 || n > MAX_Modul)
 		return 0;
 
 	modulok_sz = n;
@@ -493,7 +493,7 @@ int KLista::olvas(ifstream& f, bool billentyuzetrol) {
 }
 
 void KLista::evEltelik(){
-	Csomopont* p = fej;
+	Modul* p = fej;
 
 	if (p != 0) do {
 		for (map<pair<string, string>, int>::iterator it = p->lakosok.begin(); it != p->lakosok.end(); ++it)
@@ -503,7 +503,7 @@ void KLista::evEltelik(){
 }
 
 int KLista::ujSzemely() {
-	Csomopont* p;
+	Modul* p;
 	string foglalkozas, nev, num;
 	int m;
 
@@ -531,7 +531,7 @@ int KLista::ujSzemely() {
 }
 
 int KLista::torolSzemely(int ind) {
-	Csomopont *p = teritAdottIndexnel(ind);
+	Modul *p = teritAdottIndexnel(ind);
 	string foglalkozas, nev;
 
 	cout << "Mi a foglalkozasa?\n";

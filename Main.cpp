@@ -60,7 +60,7 @@ void valaszt(int v) {
 				if (n < 1 || n > kl.teritHossz())
 					cout << "Kiiras sikertelen, hibas bemeneti adat.\n";
 				else
-					kl.kiirCsomopont(n);
+					kl.kiirModul(n);
 			}
 			else
 				cout << "Kiiras sikertelen, hibas bemeneti adat.\n";
