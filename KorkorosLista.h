@@ -29,14 +29,14 @@ public:
 	void beszurEle(Modul *p, Modul *uj);
 	void beszurUtan(Modul *p, Modul *uj);
 
-	Modul* ujCspontOlvasBillentyuzetrol();
-	int ujCspontBeszurBillentyuzetrol();
+	Modul* ujModulOlvasBillentyuzetrol();
+	int ujModulBeszurBillentyuzetrol();
 
 	Modul* teritAdottIndexnel(int);
 	void kiirModul(int);
 	
 	int olvas(ifstream&, bool);
-	Modul* ujCspontOlvas(ifstream&, bool);
+	Modul* ujModulOlvas(ifstream&, bool);
 	
 	void evEltelik();
 	int ujSzemely();
@@ -117,7 +117,7 @@ void KLista::beszurEle(Modul *p, Modul *uj) {
 }
 
 // mukszik
-Modul* KLista::ujCspontOlvasBillentyuzetrol() {
+Modul* KLista::ujModulOlvasBillentyuzetrol() {
 	Modul *temp;
 	string foglalkozas, num, nev, kor;
 	int m;
@@ -213,12 +213,12 @@ Modul* KLista::teritAdottIndexnel(int i) {
 }
 
 // mukszik
-int KLista::ujCspontBeszurBillentyuzetrol() {
+int KLista::ujModulBeszurBillentyuzetrol() {
 	Modul *uj, *hova;
 	string valaszt, num;
 	int ind;
 
-	uj = ujCspontOlvasBillentyuzetrol();
+	uj = ujModulOlvasBillentyuzetrol();
 
 	if (uj == 0)
 		return 0;
@@ -271,7 +271,7 @@ void KLista::kiirModul(int ind) {
 	cout << endl;
 }
 
-Modul* KLista::ujCspontOlvas(ifstream& f, bool billentyuzetrol) {
+Modul* KLista::ujModulOlvas(ifstream& f, bool billentyuzetrol) {
 	Modul *temp;
 	string foglalkozas, num, nev, kor;
 	int m;
@@ -332,7 +332,7 @@ int KLista::olvas(ifstream& f, bool billentyuzetrol) {
 	prev = fej;
 	for (int i = 0; i < n; i++) {
 
-		temp = ujCspontOlvas(f, billentyuzetrol);
+		temp = ujModulOlvas(f, billentyuzetrol);
 		if (temp == 0)
 			return 0;
 
